@@ -6,14 +6,15 @@
 #
 Name     : libXaw
 Version  : 1.0.13
-Release  : 1
+Release  : 2
 URL      : https://www.x.org/releases/individual/lib/libXaw-1.0.13.tar.bz2
 Source0  : https://www.x.org/releases/individual/lib/libXaw-1.0.13.tar.bz2
 Source99 : https://www.x.org/releases/individual/lib/libXaw-1.0.13.tar.bz2.sig
-Summary  : X Athena Widgets Library, version 7
+Summary  : X11 Athena Widget library
 Group    : Development/Tools
-License  : MIT
-Requires: libXaw-lib
+License  : ICU MIT-Opengroup NTP
+Requires: libXaw-lib = %{version}-%{release}
+Requires: libXaw-license = %{version}-%{release}
 BuildRequires : libxslt-bin
 BuildRequires : pkgconfig(x11)
 BuildRequires : pkgconfig(xext)
@@ -32,8 +33,9 @@ Xaw is a widget set based on the X Toolkit Intrinsics (Xt) Library.
 %package dev
 Summary: dev components for the libXaw package.
 Group: Development
-Requires: libXaw-lib
-Provides: libXaw-devel
+Requires: libXaw-lib = %{version}-%{release}
+Provides: libXaw-devel = %{version}-%{release}
+Requires: libXaw = %{version}-%{release}
 
 %description dev
 dev components for the libXaw package.
@@ -50,9 +52,18 @@ doc components for the libXaw package.
 %package lib
 Summary: lib components for the libXaw package.
 Group: Libraries
+Requires: libXaw-license = %{version}-%{release}
 
 %description lib
 lib components for the libXaw package.
+
+
+%package license
+Summary: license components for the libXaw package.
+Group: Default
+
+%description license
+license components for the libXaw package.
 
 
 %prep
@@ -63,11 +74,14 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1533132727
-export CFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition -fstack-protector-strong -mzero-caller-saved-regs=used "
-export FCFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition -fstack-protector-strong -mzero-caller-saved-regs=used "
-export FFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition -fstack-protector-strong -mzero-caller-saved-regs=used "
-export CXXFLAGS="$CXXFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition -fstack-protector-strong -mzero-caller-saved-regs=used "
+export SOURCE_DATE_EPOCH=1557080112
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -Os -fcf-protection=full -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong "
+export FCFLAGS="$CFLAGS -O3 -Os -fcf-protection=full -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong "
+export FFLAGS="$CFLAGS -O3 -Os -fcf-protection=full -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong "
+export CXXFLAGS="$CXXFLAGS -O3 -Os -fcf-protection=full -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong "
 %configure --disable-static
 make  %{?_smp_mflags}
 
@@ -79,8 +93,10 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1533132727
+export SOURCE_DATE_EPOCH=1557080112
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/libXaw
+cp COPYING %{buildroot}/usr/share/package-licenses/libXaw/COPYING
 %make_install
 
 %files
@@ -178,3 +194,7 @@ rm -rf %{buildroot}
 /usr/lib64/libXaw6.so.6.0.1
 /usr/lib64/libXaw7.so.7
 /usr/lib64/libXaw7.so.7.0.0
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/libXaw/COPYING
